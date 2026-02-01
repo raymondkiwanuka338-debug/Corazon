@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Mi Carino ❣️ – Be My Valentine 💘</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+  body {
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    background: linear-gradient(135deg, #ff4d6d, #ffb3c6);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: white;
+  }
+
+  h1 { font-size: 2.3em; margin-bottom: 5px; }
+  p { font-size: 1.1em; margin-bottom: 10px; }
+
+  #countdown {
+    font-size: 1em;
+    margin-bottom: 25px;
+    opacity: 0.9;
+  }
+
+  .buttons {
+    position: relative;
+    width: 320px;
+    height: 220px;
+  }
+
+  button {
+    padding: 15px 30px;
+    font-size: 18px;
+    border-radius: 40px;
+    border: none;
+    cursor: pointer;
+    position: absolute;
+  }
+
+  #yes {
+    background: #ff005d;
+    color: white;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 2;
+  }
+
+  #no {
+    background: #333;
+    color: white;
+    z-index: 3;
+    transition: transform 0.2s;
+  }
+
+  .tease {
+    position: absolute;
+    bottom: 20px;
+    font-size: 1em;
+    opacity: 0.9;
+  }
+
+  .heart {
+    position: absolute;
+    bottom: -20px;
+    animation: float 6s linear infinite;
+    opacity: 0.8;
+  }
+
+  @keyframes float {
+    0% { transform: translateY(0); opacity: 0; }
+    20% { opacity: 1; }
+    100% { transform: translateY(-100vh); opacity: 0; }
+  }
+
+  #finalMessage {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 20px;
+    z-index: 10;
+  }
+
+  canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 9;
+  }
+</style>
+</head>
+
+<body>
+
+<h1>Mi Carino ❣️</h1>
+<p>Will you be my Valentine? 💕</p>
+<div id="countdown"></div>
+
+<div class="buttons">
+  <button id="yes">YES 💖</button>
+  <button id="no">NO 😅</button>
+</div>
+
+<div class="tease" id="teaseText">You can’t say no 😌</div>
+
+<div id="finalMessage">
+  <h2>You chose YES 💘</h2>
+  <p>
+    Mi Carino ❣️, you are my heart, my peace, my forever.<br>
+    Happy Valentine’s Day — now and always 💕
+  </p>
+</div>
+
+<canvas id="confetti"></canvas>
+
+<audio id="music">
+  <source src="https://www.bensound.com/bensound-music/bensound-love.mp3">
+</audio>
+
+<!-- OPTIONAL: Replace with your own voice recording -->
+<audio id="voice">
+  <source src="your-voice-message.mp3">
+</audio>
+
+<script>
+  const noBtn = document.getElementById("no");
+  const yesBtn = document.getElementById("yes");
+  const tease = document.getElementById("teaseText");
+  const music = document.getElementById("music");
+  const voice = document.getElementById("voice");
+  const finalMsg = document.getElementById("finalMessage");
+
+  let scale = 1;
+  const teases = [
+    "You can’t say no 😌",
+    "Nice try 😏",
+    "Wrong button 😂",
+    "Just press YES 💖",
+    "You know you want to 😘"
+  ];
+
+  function moveNoButton() {
+    const x = Math.random() * 260;
+    const y = Math.random() * 170;
+    scale -= 0.07;
+    noBtn.style.left = x + "px";
+    noBtn.style.top = y + "px";
+    noBtn.style.transform = `scale(${Math.max(scale, 0.4)})`;
+    tease.textContent = teases[Math.floor(Math.random() * teases.length)];
+  }
+
+  noBtn.addEventListener("mouseover", moveNoButton);
+  noBtn.addEventListener("click", moveNoButton);
+  noBtn.addEventListener("touchstart", moveNoButton);
+
+  yesBtn.addEventListener("click", () => {
+    music.play();
+    voice.play().catch(()=>{});
+    finalMsg.style.display = "flex";
+    startConfetti();
+
+    setTimeout(() => {
+      window.location.href =
+        "https://wa.me/?text=" +
+        encodeURIComponent(
+          "Yes my love ❣️ I will be your Valentine 💕 Forever yours, Mi Carino ❣️"
+        );
+    }, 3000);
+  });
+
+  // Countdown to Valentine’s Day
+  const countdown = document.getElementById("countdown");
+  const valentine = new Date(new Date().getFullYear(), 1, 14);
+  setInterval(() => {
+    const now = new Date();
+    const diff = valentine - now;
+    const d = Math.floor(diff / (1000*60*60*24));
+    const h = Math.floor((diff / (1000*60*60)) % 24);
+    const m = Math.floor((diff / (1000*60)) % 60);
+    countdown.textContent = `Valentine’s Day in ${d}d ${h}h ${m}m 💘`;
+  }, 1000);
+
+  // Floating hearts
+  setInterval(() => {
+    const heart = document.createElement("div");
+    heart.className = "heart";
+    heart.innerHTML = "💖";
+    heart.style.left = Math.random() * 100 + "vw";
+    heart.style.fontSize = Math.random() * 20 + 15 + "px";
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 6000);
+  }, 350);
+
+  // Confetti
+  function startConfetti() {
+    const canvas = document.getElementById("confetti");
+    const ctx = canvas.getContext("2d");
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const pieces = Array.from({length: 150}, () => ({
+      x: Math.random() * canvas.width,
+      y: Math.random() * canvas.height,
+      r: Math.random() * 6 + 4,
+      d: Math.random() * 150,
+    }));
+
+    function draw() {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      pieces.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+        ctx.fillStyle = "rgba(255,255,255,0.8)";
+        ctx.fill();
+      });
+      update();
+    }
+
+    function update() {
+      pieces.forEach(p => {
+        p.y += Math.cos(p.d) + 3;
+        if (p.y > canvas.height) p.y = 0;
+      });
+    }
+
+    setInterval(draw, 20);
+  }
+</script>
+
+</body>
+  </html>
